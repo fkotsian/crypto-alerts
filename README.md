@@ -1,24 +1,27 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Read data from exchanges and alert if price discrep at 5%, 10%, 20% etc
 
-Things you may want to cover:
+## Exchanges
 
-* Ruby version
+GDAX
+Binance
+Etherdelta
+Mercatox
+Bittrex
+COSS
 
-* System dependencies
+## Currencies
 
-* Configuration
+BTC
+ETH
+LTC
+- alts coming later - poss charge more for alts (or less since less opps? but more lucrative? idk just launch and see what ppl want)
 
-* Database creation
 
-* Database initialization
+### Ideas
 
-* How to run the test suite
+Charge extra $ for Euro exchange data (or US data?)
+- cheaper for Euro = more for US? LOL
 
-* Services (job queues, cache servers, search engines, etc.)
 
-* Deployment instructions
-
-* ...

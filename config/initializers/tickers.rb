@@ -1,0 +1,6 @@
+TICKERS = [
+  "ETH",
+  "BTC",
+  "LTC",
+]
+
