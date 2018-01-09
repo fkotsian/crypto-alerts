@@ -11,14 +11,19 @@
 # return in USD and in ETH-BTC combos or whatever
 require_relative './gdax.rb'
 require_relative './binance.rb'
+require_relative './bittrex.rb'
 require 'ostruct'
 
-EXCHANGES = [
+USD_EXCHANGES = [
   GdaxTracker,
-  BinanceTracker,
 ]
 
-class ExchangeComparer
+EXCHANGES = [
+  BinanceTracker,
+  BittrexTracker,
+]
+
+class Aggregator
   def self.compare
     base_prices = TICKERS.map do |t|
       dp = OpenStruct.new
@@ -45,7 +50,17 @@ class ExchangeComparer
 
     # use this return format
     pp "EXCHANGE RATES:"
-    pp BinanceTracker.all_tickers
+    EXCHANGES.each do |ex|
+      pp ex.name
+      pp ex.markets.map {|m|
+        begin
+          ex.ping(m)
+        rescue
+          #pp "ERROR FETCHING #{m} on #{ex.name}:\n#{e}"
+          nil
+        end
+      }.compact
+    end
     nil
   end
 end
