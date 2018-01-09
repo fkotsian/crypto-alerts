@@ -21,18 +21,12 @@ class BinanceTracker
   def self.all_tickers
     res = RestClient.get("#{self.API}/ticker/allPrices")
     json = JSON.parse(res)
-    ticker_comps = market_pairs("")
-    tickers = json.select {|r| ticker_comps.include? r["symbol"] }
+    tickers = json.select {|r| markets.include? r["symbol"] }
 
     # got all ticker combos
     # now return by in-out currency? (BTC -> ETH, multiplied by USD ETH price?)
     tickers.map do |t|
-      OpenStruct.new(
-        ticker: t["symbol"],
-        buy: t["symbol"][0..2],
-        in: t["symbol"][3..-1],
-        price: t["price"],
-      )
+      standard_rate(ticker: t["symbol"], price: t["price"])
     end
   end
 end

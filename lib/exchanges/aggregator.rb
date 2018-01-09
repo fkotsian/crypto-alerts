@@ -12,6 +12,7 @@
 require_relative './gdax.rb'
 require_relative './binance.rb'
 require_relative './bittrex.rb'
+require_relative './bitfinex.rb'
 require 'ostruct'
 
 USD_EXCHANGES = [
@@ -21,6 +22,7 @@ USD_EXCHANGES = [
 EXCHANGES = [
   BinanceTracker,
   BittrexTracker,
+  BitfinexTracker,
 ]
 
 class Aggregator
@@ -40,10 +42,8 @@ class Aggregator
       .map { |combo|
         buy = combo.first
         pay = combo.last
-        OpenStruct.new(
+        standard_rate(
           ticker: "#{buy.ticker}#{pay.ticker}",
-          buy: buy.ticker,
-          in: pay.ticker,
           price: buy.price.to_f / pay.price.to_f,
         )
       }

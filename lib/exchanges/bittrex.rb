@@ -17,12 +17,7 @@ class BittrexTracker
   def self.ping(ticker)
     res = RestClient.get("#{self.API}/getticker?market=#{ticker}")
     json = JSON.parse(res)["result"]
-    OpenStruct.new(
-      ticker: ticker.gsub(/-/,""),
-      buy: ticker[0..2],
-      in: ticker[4..-1],
-      price: json["Last"],
-    )
+    standard_rate(ticker: ticker, price: json["Last"])
   end
 end
 
