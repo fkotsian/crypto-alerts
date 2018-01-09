@@ -17,7 +17,7 @@ class BittrexTracker
   def self.ping(ticker)
     res = RestClient.get("#{self.API}/getticker?market=#{ticker}")
     json = JSON.parse(res)["result"]
-    standard_rate(ticker: ticker, price: json["Last"])
+    standard_rate(ex: self.name, ticker: ticker, price: json["Last"])
   end
 end
 

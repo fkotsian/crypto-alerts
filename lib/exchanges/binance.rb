@@ -26,7 +26,7 @@ class BinanceTracker
     # got all ticker combos
     # now return by in-out currency? (BTC -> ETH, multiplied by USD ETH price?)
     tickers.map do |t|
-      standard_rate(ticker: t["symbol"], price: t["price"])
+      standard_rate(ex: self.name, ticker: t["symbol"], price: t["price"])
     end
   end
 end

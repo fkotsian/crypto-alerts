@@ -43,6 +43,7 @@ class Aggregator
         buy = combo.first
         pay = combo.last
         standard_rate(
+          ex: GdaxTracker.name,
           ticker: "#{buy.ticker}#{pay.ticker}",
           price: buy.price.to_f / pay.price.to_f,
         )
@@ -50,17 +51,36 @@ class Aggregator
 
     # use this return format
     pp "EXCHANGE RATES:"
-    EXCHANGES.each do |ex|
-      pp ex.name
-      pp ex.markets.map {|m|
+    rates = EXCHANGES.map do |ex|
+      ex.markets.map do |m|
         begin
           ex.ping(m)
         rescue
           #pp "ERROR FETCHING #{m} on #{ex.name}:\n#{e}"
-          nil
         end
-      }.compact
+      end
+    end.flatten.compact
+    pp rates
+
+    pp "COMPARE!"
+    matches = rates.reduce({}) do |acc,r|
+      acc[r.tokens] ||= []
+      acc[r.tokens].push(r) if !acc[r.tokens].include?(r)
+      acc
     end
-    nil
+    pp matches
+    matches.each do |pair,rts|
+      pp pair
+      pp rts
+      max_rate = rts.max{|r| r.price}
+      min_rate = rts.min{|r| r.price}
+      pp [
+        max_rate.ex,
+        min_rate.ex,
+        max_rate.price,
+        min_rate.price,
+        (max_rate.price/min_rate.price)*100
+      ]
+    end
   end
 end

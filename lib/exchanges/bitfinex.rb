@@ -31,7 +31,7 @@ class BitfinexTracker
   def self.ping(ticker)
     res = RestClient.get("#{self.API}/ticker/t#{ticker}")
     json = JSON.parse(res)
-    standard_rate(ticker: ticker, price: json[6])
+    standard_rate(ex: self.name, ticker: ticker, price: json[6])
   end
 
   def self.ping_currency(curr)

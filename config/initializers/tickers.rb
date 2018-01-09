@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'set'
 
 TICKERS = [
   "ETH",
@@ -12,12 +13,13 @@ def market_pairs(join_sym="")
     .map {|combo| combo.join("#{join_sym}") }
 end
 
-def standard_rate(ticker: , price: )
+def standard_rate(ex: , ticker: , price: )
   tick = ticker.gsub(/-/, "")
 
   OpenStruct.new(
+    ex: ex,
     ticker: tick,
-    tokens: [tick[0..2], tick[3..-1]],
-    price: price,
+    tokens: Set.new([tick[0..2], tick[3..-1]]),
+    price: price.to_f,
   )
 end
