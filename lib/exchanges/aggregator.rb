@@ -39,6 +39,7 @@ EXCHANGES = [
 
 class Aggregator
   def self.compare
+    pp "#{market_pairs.length**2} requests per exchange, #{EXCHANGES.length} exchanges = #{market_pairs.length**2 * EXCHANGES.length} requests."
     base_prices = USD_MARKETS.map do |t|
       begin
         GdaxTracker.ping(t)
