@@ -37,6 +37,8 @@ EXCHANGES = [
   EUR_EXCHANGES,
 ].reduce([]) {|acc, ex| acc.concat ex; acc}
 
+REQUIRED_DIFF = 0.03
+
 class Aggregator
   def self.compare
     pp "#{market_pairs.length**2} requests per exchange, #{EXCHANGES.length} exchanges = #{market_pairs.length**2 * EXCHANGES.length} requests."
@@ -68,19 +70,26 @@ class Aggregator
       acc[r.tokens].push(r) if !acc[r.tokens].include?(r)
       acc
     end
-    pp matches
-    matches.each do |pair,rts|
+    profitable_matches = matches.map do |pair,rts|
       pp pair
       pp rts
       max_rate = rts.max{|r| r.price}
       min_rate = rts.min{|r| r.price}
-      pp [
+      percent_diff = (1.0 * max_rate.price/min_rate.price)
+
+      profit = [
         max_rate.ex,
         min_rate.ex,
         max_rate.price,
         min_rate.price,
-        (max_rate.price/min_rate.price)*100
+        percent_diff*100
       ]
-    end
+      pp profit
+      # select ones greater than DIFF from 100
+      profit if (percent_diff > 1+REQUIRED_DIFF) || (percent_diff < 1-REQUIRED_DIFF)
+    end.compact
+
+    pp "PROFITABLE MATCHES!"
+    pp profitable_matches
   end
 end
