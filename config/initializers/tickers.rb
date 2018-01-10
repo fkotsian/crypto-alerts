@@ -2,19 +2,27 @@ require 'ostruct'
 require 'set'
 
 TICKERS = [
+  "USD",
   "ETH",
   "BTC",
   "LTC",
+  "NEO",
+  "XLM",
+  "XEM",
+  "EOS",
+  "ZRX",
 ]
+USD_MARKETS = TICKERS.map {|t| "#{t}-USD"}
 
 def market_pairs(join_sym="")
   TICKERS
     .permutation(2).to_a
     .map {|combo| combo.join("#{join_sym}") }
+    .select {|p| p.include? "BTC"}
 end
 
 def standard_rate(ex: , ticker: , price: )
-  tick = ticker.gsub(/-/, "")
+  tick = ticker.gsub(/[-_]/, "").upcase
 
   OpenStruct.new(
     ex: ex,

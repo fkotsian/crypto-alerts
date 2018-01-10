@@ -11,9 +11,13 @@ class GdaxTracker
     "GDAX"
   end
 
+  def self.markets
+    market_pairs("-")
+  end
+
   def self.ping(ticker)
-    res = RestClient.get("#{self.API}/products/#{ticker}-USD/ticker")
+    res = RestClient.get("#{self.API}/products/#{ticker}/ticker")
     json = JSON.parse(res)
-    json["price"]
+    standard_rate(ex: self.name, ticker: ticker, price: json["price"])
   end
 end

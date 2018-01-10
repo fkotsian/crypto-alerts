@@ -9,45 +9,44 @@
 # Binance ETH-BTC: .00095 * (BTC=15000)
 #
 # return in USD and in ETH-BTC combos or whatever
-require_relative './gdax.rb'
-require_relative './binance.rb'
-require_relative './bittrex.rb'
-require_relative './bitfinex.rb'
+Dir[File.dirname(__FILE__) + "/*.rb"].each do |tracker|
+  require_relative(tracker)
+end
 require 'ostruct'
 
 USD_EXCHANGES = [
   GdaxTracker,
 ]
 
-EXCHANGES = [
+US_EXCHANGES = [
+  GdaxTracker,
   BinanceTracker,
   BittrexTracker,
-  BitfinexTracker,
+  PoloniexTracker,
+  #symbols are wack KrakenTracker,
+  HitbtcTracker,
 ]
+EUR_EXCHANGES = [
+  BitfinexTracker,
+  OkexTracker,
+  HuobiTracker,
+  CryptopiaTracker,
+]
+EXCHANGES = [
+  US_EXCHANGES,
+  EUR_EXCHANGES,
+].reduce([]) {|acc, ex| acc.concat ex; acc}
 
 class Aggregator
   def self.compare
-    base_prices = TICKERS.map do |t|
-      dp = OpenStruct.new
-      dp["ticker"] = t
-      dp["price"] = GdaxTracker.ping(t)
-      dp
+    base_prices = USD_MARKETS.map do |t|
+      begin
+        GdaxTracker.ping(t)
+      rescue
+      end
     end
     pp "BASE PRICES (USD):"
     pp base_prices
-    pp "GDAX EXCHANGE RATES:"
-    pp base_prices.to_a
-      .permutation(2)
-      .to_a
-      .map { |combo|
-        buy = combo.first
-        pay = combo.last
-        standard_rate(
-          ex: GdaxTracker.name,
-          ticker: "#{buy.ticker}#{pay.ticker}",
-          price: buy.price.to_f / pay.price.to_f,
-        )
-      }
 
     # use this return format
     pp "EXCHANGE RATES:"
