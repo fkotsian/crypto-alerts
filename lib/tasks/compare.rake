@@ -4,5 +4,7 @@ require_relative '../../lib/exchanges/aggregator'
 
 desc "Compare Crypto prices!"
 task :compare do
-  Aggregator.compare
+  CurrencyArbiter.compare_one_stage(in_curr: "USD", out_curr: "USD", medium: "BTC")
+  CurrencyArbiter.compare_one_stage(in_curr: "USD", out_curr: "USD", medium: "ETH")
+  CurrencyArbiter.compare_one_stage(in_curr: "USD", out_curr: "USD", medium: "LTC")
 end
