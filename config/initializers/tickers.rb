@@ -18,8 +18,10 @@ def market_pairs(join_sym="")
   TICKERS
     .permutation(2).to_a
     .map {|combo| combo.join("#{join_sym}") }
+    .select {|p| p.include? "BTC"}
+    .select {|p| p.include? "USD"}
+    # Comment out selects to include all currency pairs
     # include all currency pairs at this time - not just those that come in btc
-    #.select {|p| p.include? "BTC"}
 end
 
 def standard_rate(ex: , ticker: , price: )

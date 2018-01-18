@@ -9,6 +9,11 @@
 # Binance ETH-BTC: .00095 * (BTC=15000)
 #
 # return in USD and in ETH-BTC combos or whatever
+#
+# 1. BTC arb in USD -> other
+# - start w US exchange
+# - move to EUR or other US exchange
+# - display if arb rate >= 3%
 Dir[File.dirname(__FILE__) + "/*.rb"].each do |tracker|
   require_relative(tracker)
 end
@@ -18,31 +23,32 @@ USD_EXCHANGES = [
   GdaxTracker,
 ]
 
-US_EXCHANGES = [
+IN_EXCHANGES = [
   GdaxTracker,
+]
+OUT_EXCHANGES = [
   BinanceTracker,
   BittrexTracker,
   PoloniexTracker,
   #symbols are wack KrakenTracker,
   HitbtcTracker,
-]
-EUR_EXCHANGES = [
   BitfinexTracker,
   OkexTracker,
   HuobiTracker,
   CryptopiaTracker,
 ]
 EXCHANGES = [
-  US_EXCHANGES,
-  EUR_EXCHANGES,
+  IN_EXCHANGES,
+  OUT_EXCHANGES,
 ].reduce([]) {|acc, ex| acc.concat ex; acc}
 
 REQUIRED_DIFF = 0.03
 
 class Aggregator
   def self.compare
-    pp "#{market_pairs.length**2} requests per exchange, #{EXCHANGES.length} exchanges = #{market_pairs.length**2 * EXCHANGES.length} requests."
-    base_prices = USD_MARKETS.map do |t|
+    #pp "#{market_pairs.length**2} requests per exchange, #{EXCHANGES.length} exchanges = #{market_pairs.length**2 * EXCHANGES.length} requests."
+    #base_prices = USD_MARKETS.map do |t|
+    base_prices = ["BTC-USD"].map do |t|
       begin
         GdaxTracker.ping(t)
       rescue
@@ -82,11 +88,12 @@ class Aggregator
         min_rate.ex,
         max_rate.price,
         min_rate.price,
-        percent_diff*100
+        "Spread: #{(100 - percent_diff*100).round(2)}%",
       ]
       pp profit
       # select ones greater than DIFF from 100
-      profit if (percent_diff > 1+REQUIRED_DIFF) || (percent_diff < 1-REQUIRED_DIFF)
+      #profit if (percent_diff > 1+REQUIRED_DIFF) || (percent_diff < 1-REQUIRED_DIFF)
+      profit
     end.compact
 
     pp "PROFITABLE MATCHES!"
