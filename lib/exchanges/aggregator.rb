@@ -88,7 +88,7 @@ class CurrencyArbiter
             out_rate.ex,
             base_rate.price,
             out_rate.price,
-            "Spread: #{(100 - percent_diff*100).round(2)}%",
+            (100 - percent_diff*100).round(2),
           ]
           # select ones greater than DIFF from 100
           #spread if (percent_diff > 1+REQUIRED_DIFF) || (percent_diff < 1-REQUIRED_DIFF)
@@ -101,5 +101,16 @@ class CurrencyArbiter
 
     pp "SPREADS"
     pp spreads
+
+    spreads.each do |pair, ss|
+      ss.each do |s|
+        if s.last > 0
+          p "PROFITABLE SPREAD OF #{s.last}% on #{s.first} to #{s.second}"
+          profit = (1000*s.last/100.0) - 5 - 10 - (1000*0.005)
+          p "At transaction of $1000 and costs of 10+5+.0.5%, profit is: ** $ #{profit} (#{(profit/1000.0 * 100).round(2)}% ROI) **"
+        end
+      end
+    end
+    pp
   end
 end
