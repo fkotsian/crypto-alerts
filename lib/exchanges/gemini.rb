@@ -14,7 +14,7 @@ class GeminiTracker
   end
 
   def self.ping(ticker)
-    res = RestClient.get("#{API}/pubticker/#{ticker}")
+    res = RestClient.get("#{self.API}/pubticker/#{ticker}")
     json = JSON.parse res
     standard_rate(ex: self.name, ticker: ticker, price: json["last"])
   end

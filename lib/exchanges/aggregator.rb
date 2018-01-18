@@ -111,6 +111,6 @@ class CurrencyArbiter
         end
       end
     end
-    pp
+    p "*" *100
   end
 end
