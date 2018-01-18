@@ -1,3 +1,5 @@
+require 'twilio-ruby'
+
 # Aggregator:
 # - ping tickers w each client
 # - aggregate prices/ticker
@@ -41,6 +43,10 @@ OUT_EXCHANGES = [
 ]
 
 REQUIRED_DIFF = 0.03
+
+RECIPIENTS = [
+  '+13104835624',
+]
 
 class CurrencyArbiter
   def self.compare_one_stage(in_curr: "USD", out_curr: "USD", medium: "BTC", us_only: false)
@@ -102,15 +108,32 @@ class CurrencyArbiter
     pp "SPREADS"
     pp spreads
 
+    @twilio = Twilio::REST::Client.new(
+      Rails.application.secrets.twilio_account_sid,
+      Rails.application.secrets.twilio_auth_token,
+    )
     spreads.each do |pair, ss|
       ss.each do |s|
         if s.last > 0
-          p "PROFITABLE SPREAD OF #{s.last}% on #{s.first} to #{s.second}"
-          profit = (1000*s.last/100.0) - 5 - 10 - (1000*0.005)
-          p "At transaction of $1000 and costs of 10+5+.0.5%, profit is: ** $ #{profit} (#{(profit/1000.0 * 100).round(2)}% ROI) **"
+          # send message instead of / in addition to output
+          l1 = "PROFITABLE SPREAD for pair #{pair.to_a.join(",")} of #{s.last}%, #{s.first} => #{s.second}."
+          profit = (1000*s.last/100.0) - 10 - 10 - (1000*0.005)
+          l2 = "At transaction size of $1000 and fixed costs of $20, profit is: $ #{sprintf('%.2f', profit)} (#{(profit/1000.0 * 100).round(2)}% ROI) **"
+          p l1
+          p l2
+        end
+
+        if s.last > 1
+          RECIPIENTS.each do |receiver|
+            @twilio.messages.create(
+              body: "#{l1} #{l2}",
+              to: receiver,
+              from: '+16508894472',
+            )
+          end
         end
       end
     end
-    p "*" *100
+    p "*" * 100
   end
 end

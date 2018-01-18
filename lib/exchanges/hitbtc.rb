@@ -14,6 +14,8 @@ class HitbtcTracker
   end
 
   def self.ping(ticker)
+    # note: can withdraw/trade USD on HitBTC, after verification
+
     res = RestClient.get("#{self.API}/public/ticker/#{ticker}")
     json = JSON.parse(res)
     standard_rate(ex: self.name, ticker: ticker, price: json["last"])
