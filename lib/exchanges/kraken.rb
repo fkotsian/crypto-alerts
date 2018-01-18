@@ -16,8 +16,17 @@ class KrakenTracker
   end
 
   def self.ping(ticker)
+    # Kraken calls BTC by XBT
+    if ticker.include? "BTC"
+      ticker.gsub!(/BTC/, "XBT")
+    end
+
     res = RestClient.get("#{self.API}/Ticker?pair=#{ticker}")
-    json = JSON.parse(res)
-    standard_rate(ex: self.name, ticker: ticker, price: json["result"][ticker]["c"])
+    json = JSON.parse(res)["result"]
+    keys = json.keys
+    # Use .keys to get the first key in the result array;
+    # "c" key returns last transaction [price, volume]
+    # See: https://api.kraken.com/0/public/Ticker?pair=XBTUSD
+    standard_rate(ex: self.name, ticker: ticker, price: json[keys[0]]["c"].first)
   end
 end
