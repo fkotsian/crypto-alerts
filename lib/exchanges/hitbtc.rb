@@ -14,7 +14,8 @@ class HitbtcTracker
   end
 
   def self.ping(ticker)
-    # note: can withdraw/trade USD on HitBTC, after verification
+    # note: can withdraw/trade USD on BTC, after verification
+    # - USD/USDT confusion is not a lie *can trade in USD and USDT, but is unclear which is which - perhaps after verification it becomes clearer?*
 
     res = RestClient.get("#{self.API}/public/ticker/#{ticker}")
     json = JSON.parse(res)
