@@ -123,7 +123,8 @@ class CurrencyArbiter
           p l2
         end
 
-        if s.last > 1
+        required_spread = Rails.application.secrets.required_spread_for_alert.to_i
+        if s.last >= required_spread
           RECIPIENTS.each do |receiver|
             @twilio.messages.create(
               body: "#{l1} #{l2}",
